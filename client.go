@@ -11,6 +11,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/valyala/bytebufferpool"
 	"github.com/valyala/fasthttp"
 )
 
@@ -43,14 +44,14 @@ func (c *Client) Execute(method, path string, params map[string]interface{}, r i
 		req   = fasthttp.AcquireRequest()
 		uri   = fasthttp.AcquireURI()
 		query = fasthttp.AcquireArgs()
-		body  = fasthttp.AcquireByteBuffer()
+		body  = bytebufferpool.Get()
 		resp  = fasthttp.AcquireResponse()
 	)
 	defer func() {
 		fasthttp.ReleaseRequest(req)
 		fasthttp.ReleaseURI(uri)
 		fasthttp.ReleaseArgs(query)
-		fasthttp.ReleaseByteBuffer(body)
+		bytebufferpool.Put(body)
 		fasthttp.ReleaseResponse(resp)
 	}()
 
